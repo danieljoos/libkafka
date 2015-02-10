@@ -88,7 +88,7 @@ int Request::getWireFormatSize(bool includePacketSize)
   // apiKey + apiVersion + correlationId + clientId
 
   int size = RequestOrResponse::getWireFormatSize(includePacketSize);
-  size += sizeof(short int) + sizeof(short int) + sizeof(int) + sizeof(short int) + clientId.length();
+  size += static_cast<int>(sizeof(short int) + sizeof(short int) + sizeof(int) + sizeof(short int) + clientId.length());
   return size;
 }
 

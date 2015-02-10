@@ -43,7 +43,7 @@ MessageSet::MessageSet(int messageSetSize, Packet *packet) : WireFormatter(), Pa
 
   while (bytesRead < this->messageSetSize)
   {
-    long int offset = this->packet->readInt64();
+    long long offset = this->packet->readInt64();
     int messageSize = this->packet->readInt32();
     Message *message = new Message(packet, offset);
     int messageWireSize = message->getWireFormatSize(false);

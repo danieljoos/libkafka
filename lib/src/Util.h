@@ -33,7 +33,7 @@ namespace LibKafka {
   std::string intToString(int i);
   std::string charToBinaryString(unsigned char x);
   std::string intArrayToString(int* i, int size);
-  std::string longIntArrayToString(long int* i, int size);
+  std::string longLongArrayToString(long long* i, int size);
 
 }; // namespace LibKafka
 

@@ -89,7 +89,7 @@ int MetadataRequest::getWireFormatSize(bool includePacketSize)
   int size = Request::getWireFormatSize(includePacketSize);
   size += sizeof(int);
   for (int i=0; i<topicNameArraySize; i++) {
-    size += sizeof(short int) + topicNameArray[i].length();
+    size += static_cast<int>(sizeof(short int) + topicNameArray[i].length());
   }
   return size;
 }

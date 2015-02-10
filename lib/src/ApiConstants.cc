@@ -28,37 +28,37 @@
 
 namespace LibKafka {
 
-const int ApiConstants::API_VERSION;
+const int ApiConstants::API_VERSION = 0;
 
-const int ApiConstants::PRODUCE_REQUEST_KEY;
-const int ApiConstants::FETCH_REQUEST_KEY;
-const int ApiConstants::OFFSET_REQUEST_KEY;
-const int ApiConstants::METADATA_REQUEST_KEY;
-const int ApiConstants::LEADER_AND_ISR_REQUEST_KEY;
-const int ApiConstants::STOP_REPLICA_REQUEST_KEY;
-const int ApiConstants::OFFSET_COMMIT_REQUEST_KEY;
-const int ApiConstants::OFFSET_FETCH_REQUEST_KEY;
+const int ApiConstants::PRODUCE_REQUEST_KEY = 0;
+const int ApiConstants::FETCH_REQUEST_KEY = 1;
+const int ApiConstants::OFFSET_REQUEST_KEY = 2;
+const int ApiConstants::METADATA_REQUEST_KEY = 3;
+const int ApiConstants::LEADER_AND_ISR_REQUEST_KEY = 4;
+const int ApiConstants::STOP_REPLICA_REQUEST_KEY = 5;
+const int ApiConstants::OFFSET_COMMIT_REQUEST_KEY = 6;
+const int ApiConstants::OFFSET_FETCH_REQUEST_KEY = 7;
 
-const int ApiConstants::ERRORCODE_MINIMUM;
-const int ApiConstants::ERRORCODE_MAXIMUM;
-const int ApiConstants::ERRORCODE_UNKNOWN;
-const int ApiConstants::ERRORCODE_NO_ERROR;
-const int ApiConstants::ERRORCODE_OFFSET_OUT_OF_RANGE;
-const int ApiConstants::ERRORCODE_INVALID_MESSAGE;
-const int ApiConstants::ERRORCODE_UNKNOWN_TOPIC_OR_PARTITION;
-const int ApiConstants::ERRORCODE_INVALID_MESSAGE_SIZE;
-const int ApiConstants::ERRORCODE_LEADER_NOT_AVAILABLE;
-const int ApiConstants::ERRORCODE_NOT_LEADER_FOR_PARTITION;
-const int ApiConstants::ERRORCODE_REQUEST_TIMED_OUT;
-const int ApiConstants::ERRORCODE_BROKER_NOT_AVAILABLE;
-const int ApiConstants::ERRORCODE_REPLICA_NOT_AVAILABLE;
-const int ApiConstants::ERRORCODE_MESSAGE_SIZE_TOO_LARGE;
-const int ApiConstants::ERRORCODE_STALE_CONTROLLER_EPOCH_CODE;
-const int ApiConstants::ERRORCODE_OFFSET_METADATA_TOO_LARGE_CODE;
+const int ApiConstants::ERRORCODE_UNKNOWN = -1;
+const int ApiConstants::ERRORCODE_NO_ERROR = 0;
+const int ApiConstants::ERRORCODE_OFFSET_OUT_OF_RANGE = 1;
+const int ApiConstants::ERRORCODE_INVALID_MESSAGE = 2;
+const int ApiConstants::ERRORCODE_UNKNOWN_TOPIC_OR_PARTITION = 3;
+const int ApiConstants::ERRORCODE_INVALID_MESSAGE_SIZE = 4;
+const int ApiConstants::ERRORCODE_LEADER_NOT_AVAILABLE = 5;
+const int ApiConstants::ERRORCODE_NOT_LEADER_FOR_PARTITION = 6;
+const int ApiConstants::ERRORCODE_REQUEST_TIMED_OUT = 7;
+const int ApiConstants::ERRORCODE_BROKER_NOT_AVAILABLE = 8;
+const int ApiConstants::ERRORCODE_REPLICA_NOT_AVAILABLE = 9;
+const int ApiConstants::ERRORCODE_MESSAGE_SIZE_TOO_LARGE = 10;
+const int ApiConstants::ERRORCODE_STALE_CONTROLLER_EPOCH_CODE = 11;
+const int ApiConstants::ERRORCODE_OFFSET_METADATA_TOO_LARGE_CODE = 12;
+const int ApiConstants::ERRORCODE_MINIMUM = -1;
+const int ApiConstants::ERRORCODE_MAXIMUM = 12;
 
-const signed char ApiConstants::MESSAGE_COMPRESSION_NONE;
-const signed char ApiConstants::MESSAGE_COMPRESSION_GZIP;
-const signed char ApiConstants::MESSAGE_COMPRESSION_SNAPPY;
+const signed char ApiConstants::MESSAGE_COMPRESSION_NONE = 0x00;
+const signed char ApiConstants::MESSAGE_COMPRESSION_GZIP = 0x01;
+const signed char ApiConstants::MESSAGE_COMPRESSION_SNAPPY = 0x02;
 
 const char* ApiConstants::ERRORSTRING_INVALID_ERROR_CODE = "invalid error code";
 const char* ApiConstants::ERRORSTRING_UNKNOWN = "unexpected server error";

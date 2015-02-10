@@ -60,7 +60,7 @@ string intArrayToString(int* array, int size)
   return ss.str();
 }
 
-string longIntArrayToString(long int* array, int size)
+string longLongArrayToString(long long* array, int size)
 {
   ostringstream ss;
   ss << "[";

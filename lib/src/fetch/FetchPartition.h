@@ -40,7 +40,7 @@ class FetchPartition : public WireFormatter, public PacketWriter, public ErrorHa
   public:
 
     int partition;
-    long int fetchOffset;
+    long long fetchOffset;
     int maxBytes;
 
     FetchPartition(Packet *packet);

@@ -40,7 +40,7 @@ class OffsetPartition : public WireFormatter, public PacketWriter, public ErrorH
   public:
 
     int partition;
-    long int time;
+    long long time;
     int maxNumberOfOffsets;
 
     OffsetPartition(Packet *packet);

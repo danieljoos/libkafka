@@ -46,7 +46,7 @@ OffsetResponsePartition::OffsetResponsePartition(Packet *packet) : WireFormatter
 
   // Kafka Protocol: long int offset[]
   this->offsetArraySize = this->packet->readInt32();
-  this->offsetArray = new long int[this->offsetArraySize];
+  this->offsetArray = new long long[this->offsetArraySize];
   for (int i=0; i<this->offsetArraySize; i++) {
     this->offsetArray[i] = this->packet->readInt64();
   }
@@ -54,7 +54,7 @@ OffsetResponsePartition::OffsetResponsePartition(Packet *packet) : WireFormatter
   this->releaseArrays = true;
 }
 
-OffsetResponsePartition::OffsetResponsePartition(int partition, short int errorCode, int offsetArraySize, long int *offsetArray, bool releaseArrays) : WireFormatter(), PacketWriter(), ErrorHandler()
+OffsetResponsePartition::OffsetResponsePartition(int partition, short int errorCode, int offsetArraySize, long long *offsetArray, bool releaseArrays) : WireFormatter(), PacketWriter(), ErrorHandler()
 {
   D(cout.flush() << "--------------OffsetResponsePartition(params)\n";)
 
@@ -116,7 +116,7 @@ ostream& operator<< (ostream& os, const OffsetResponsePartition& frp)
   os << "OffsetResponsePartition:partition:" << frp.partition << "\n";
   os << "OffsetResponsePartition:errorCode:" << frp.errorCode << ":" << ApiConstants::getErrorString(frp.errorCode) <<"\n";
   os << "OffsetResponsePartition:offsetArraySize" << frp.offsetArraySize << "\n";
-  os << "OffsetResponsePartition:offsetArray" << longIntArrayToString(frp.offsetArray, frp.offsetArraySize) << "\n";
+  os << "OffsetResponsePartition:offsetArray" << longLongArrayToString(frp.offsetArray, frp.offsetArraySize) << "\n";
   return os;
 }
 

@@ -44,7 +44,7 @@ class FetchResponsePartition : public WireFormatter, public PacketWriter, public
 
     int partition;
     short int errorCode;
-    long int highwaterMarkOffset;
+    long long highwaterMarkOffset;
     int messageSetSize;
     MessageSet *messageSet;
 

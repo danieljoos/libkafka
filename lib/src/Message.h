@@ -50,9 +50,9 @@ class Message: public WireFormatter, public PacketWriter
     unsigned char* value;
     int compressedValueLength;
 
-    long int offset;
+    long long offset;
 
-    Message(Packet *packet, long int offset = -1);
+    Message(Packet *packet, long long offset = -1);
     Message(int crc, unsigned char magicByte, unsigned char attributes, int keyLength, unsigned char* key, int valueLength, unsigned char* value, long int offset = -1, bool releaseArrays = false);
     ~Message();
 

@@ -28,8 +28,13 @@
 
 #include <iostream>
 #include <string>
+#ifdef _WIN32
+#include <Winsock2.h>
+#pragma comment(lib, "ws2_32.lib")
+#else
 #include <sys/socket.h>
 #include <netdb.h>
+#endif  // _WIN32
 #include "Debug.h"
 
 namespace LibKafka {
@@ -38,11 +43,11 @@ class Connection
 {
   public:
 
-    static const int DEFAULT_BUFFER_SIZE = 1024;
-    static const int SOCKET_UNINITIALIZED = -1;
-    static const int OPEN_CONNECTION_ERROR = -1;
-    static const int READ_ERROR = -1;
-    static const int WRITE_ERROR = -1;
+    static const int DEFAULT_BUFFER_SIZE;
+    static const int SOCKET_UNINITIALIZED;
+    static const int OPEN_CONNECTION_ERROR;
+    static const int READ_ERROR;
+    static const int WRITE_ERROR;
 
     Connection(std::string host, int port);
     ~Connection();
@@ -56,7 +61,6 @@ class Connection
     int port;
 
   protected:
-
     int socketFd;
     std::string portString;
     struct addrinfo host_info;

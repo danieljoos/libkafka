@@ -36,7 +36,7 @@ class Packet : public WireFormatter
 {
   public:
 
-    static const int DEFAULT_BUFFER_SIZE = 1024;
+    static const int DEFAULT_BUFFER_SIZE;
 
     enum CompressionType { COMPRESSION_GZIP, COMPRESSION_SNAPPY };
 
@@ -50,7 +50,7 @@ class Packet : public WireFormatter
     signed char readInt8();
     short int readInt16();
     int readInt32();
-    long int readInt64();
+    long long readInt64();
     std::string readString();
     unsigned char* readBytes(int numBytes);
 
@@ -58,7 +58,7 @@ class Packet : public WireFormatter
     void writeInt16(short int value);
     void writeInt32(int value);
     void updateInt32(int value, unsigned char *bufferPointer);
-    void writeInt64(long int value);
+    void writeInt64(long long value);
     void writeString(std::string value);
 
     // see usage assumptions in Packet.cc

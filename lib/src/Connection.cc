@@ -26,11 +26,16 @@
 #include <iostream>
 #include <string>
 #include <cstring>
+#ifdef _WIN32
+#include <Winsock2.h>
+#include <ws2tcpip.h>
+#else
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netdb.h>
 #include <errno.h>
 #include <fcntl.h>
+#endif  // _WIN32
 
 #include "Connection.h"
 #include "Util.h"
@@ -39,11 +44,11 @@ using namespace std;
 
 namespace LibKafka {
 
-const int Connection::DEFAULT_BUFFER_SIZE;
-const int Connection::SOCKET_UNINITIALIZED;
-const int Connection::OPEN_CONNECTION_ERROR;
-const int Connection::READ_ERROR;
-const int Connection::WRITE_ERROR;
+const int Connection::DEFAULT_BUFFER_SIZE = 1024;
+const int Connection::SOCKET_UNINITIALIZED = -1;
+const int Connection::OPEN_CONNECTION_ERROR = -1;
+const int Connection::READ_ERROR = -1;
+const int Connection::WRITE_ERROR = -1;
 
 Connection::Connection(string host, int port)
 {
@@ -82,7 +87,7 @@ int Connection::open()
   }
 
   D(cout.flush() << "--------------Connection::open():socket\n";)
-  this->socketFd = socket(this->host_info_list->ai_family, this->host_info_list->ai_socktype, this->host_info_list->ai_protocol);
+  this->socketFd = static_cast<int>(socket(this->host_info_list->ai_family, this->host_info_list->ai_socktype, this->host_info_list->ai_protocol));
   if (socketFd == -1)
   {
 
@@ -96,21 +101,35 @@ int Connection::open()
   fd_set set;
   FD_ZERO(&set);
   FD_SET(this->socketFd, &set);
+#ifdef _WIN32
+  u_long iomode = 1;
+  ioctlsocket(this->socketFd,FIONBIO,&iomode);
+#else
   fcntl(this->socketFd, F_SETFL, O_NONBLOCK);
+#endif  // _WIN32
 
   D(cout.flush() << "--------------Connection::open():connect\n";)
+#ifdef _WIN32
+  status = connect(socketFd, this->host_info_list->ai_addr, static_cast<int>(this->host_info_list->ai_addrlen));
+#else
   status = connect(socketFd, this->host_info_list->ai_addr, this->host_info_list->ai_addrlen);
+#endif  // _WIN32
   if ((status == -1) && (errno != EINPROGRESS))
   {
     E("Connection::open():open error:" << strerror(errno) << "\n");
     return OPEN_CONNECTION_ERROR;
   }
 
-  status = select(this->socketFd+1, NULL, &set, NULL, &timeout);
+  status = select(static_cast<int>(this->socketFd)+1, NULL, &set, NULL, &timeout);
+#ifdef _WIN32
+  iomode = 0;
+  ioctlsocket(this->socketFd,FIONBIO,&iomode);
+#else
   fcntl(this->socketFd, F_SETFL, fcntl(this->socketFd, F_GETFL, 0) & ~O_NONBLOCK);
+#endif  // _WIN32
 
   D(cout.flush() << "--------------Connection::open():connected\n";)
-  return this->socketFd;
+  return static_cast<int>(this->socketFd);
 }
 
 void Connection::close()
@@ -125,7 +144,11 @@ void Connection::close()
 
   if (this->socketFd != SOCKET_UNINITIALIZED)
   {
+#ifdef _WIN32
+    closesocket(this->socketFd);
+#else
     ::close(this->socketFd);
+#endif  // _WIN32
     this->socketFd = SOCKET_UNINITIALIZED;
   }
 }
@@ -136,7 +159,11 @@ int Connection::read(int numBytes, unsigned char* buffer)
 
   int flags = 0;
   int numBytesReceived = 0;
+#ifdef _WIN32
+  char *p = (char*) buffer;
+#else
   unsigned char *p = buffer;
+#endif  // _WIN32
 
   while (numBytesReceived < numBytes)
   {
@@ -156,7 +183,11 @@ int Connection::write(int numBytes, unsigned char* buffer)
   D(cout.flush() << "--------------Connection::write(" << numBytes << ")\n";)
 
     int flags = 0;
+#ifdef _WIN32
+  int numBytesSent = (int)::send(this->socketFd, (const char*) buffer, (size_t) numBytes, flags);
+#else
   int numBytesSent = (int)::send(this->socketFd, (const void*)buffer, (ssize_t)numBytes, flags);
+#endif  // _WIN32
   if (numBytesSent == WRITE_ERROR) { E("Connection::write():error:" << strerror(errno) << "\n"); }
   D(cout.flush() << "--------------Connection::write(" << numBytes << "):wrote " << numBytesSent << "bytes\n";)
     return numBytesSent;

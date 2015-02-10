@@ -81,7 +81,7 @@ int Broker::getWireFormatSize(bool includePacketSize)
 
   int size = 0;
   if (includePacketSize) size += sizeof(int);
-  size += sizeof(int) + sizeof(short int) + this->host.length() + sizeof(int);
+  size += static_cast<int>(sizeof(int) + sizeof(short int) + this->host.length() + sizeof(int));
   return size;
 }
 

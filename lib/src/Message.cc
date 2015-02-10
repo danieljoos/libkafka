@@ -34,7 +34,7 @@ using namespace std;
 
 namespace LibKafka {
 
-Message::Message(Packet *packet, long int offset) : WireFormatter(), PacketWriter(packet)
+Message::Message(Packet *packet, long long offset) : WireFormatter(), PacketWriter(packet)
 {
   D(cout.flush() << "--------------Message(buffer)\n";)
 
@@ -174,7 +174,7 @@ void Message::setCompression(int codec)
 
 bool Message::hasCompression()
 {
-  return (this->attributes & COMPRESSION_MASK);
+  return (this->attributes & COMPRESSION_MASK) != 0;
 }
 
 ostream& operator<< (ostream& os, const Message& m)

@@ -43,7 +43,7 @@ class ProduceResponsePartition : public WireFormatter, public PacketWriter, publ
 
     int partition;
     short int errorCode;
-    long int offset;
+    long long offset;
 
     ProduceResponsePartition(Packet *packet);
     ProduceResponsePartition(int partition, short int errorCode, long int offset);

@@ -110,7 +110,7 @@ namespace LibKafka {
 
 	  int size = 0;
 	if (includePacketSize) size += sizeof(int);
-	size += sizeof(short int) + this->topicName.length() + sizeof(int);
+	size += static_cast<int>(sizeof(short int) + this->topicName.length() + sizeof(int));
 	for (int i=0; i<subBlockArraySize; i++) {
 	  size += subBlockArray[i]->getWireFormatSize(false);
 	}

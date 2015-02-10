@@ -27,9 +27,14 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
-#include <arpa/inet.h>
 #include <zlib.h>
 #include <snappy.h>
+
+#ifdef _WIN32
+#include <Winsock2.h>
+#else
+#include <arpa/inet.h>
+#endif  // _WIN32
 
 #include "Packet.h"
 #include "Util.h"
@@ -38,7 +43,7 @@ using namespace std;
 
 namespace LibKafka {
 
-const int Packet::DEFAULT_BUFFER_SIZE;
+const int Packet::DEFAULT_BUFFER_SIZE = 1024;
 
 // Constructor to parse incoming Kafka protocol packet
 Packet::Packet(unsigned char *buffer, bool releaseBuffer) : WireFormatter()
@@ -117,11 +122,11 @@ int Packet::readInt32()
   return hostValue;
 }
 
-long int Packet::readInt64()
+long long Packet::readInt64()
 {
-  long int netValue = *(long int*)(this->head);
-  long int hostValue = ntohll(netValue);
-  this->head += sizeof(long int);
+  long long netValue = *(long long*)(this->head);
+  long long hostValue = ntohll(netValue);
+  this->head += sizeof(long long);
   D(cout.flush() << "Packet::readInt64():netValue(" << netValue << "):hostValue(" << hostValue << ")\n";)
   return hostValue;
 }
@@ -187,22 +192,22 @@ void Packet::updateInt32(int hostValue, unsigned char *bufferPointer)
   D(cout.flush() << "Packet::updateInt32():hostValue(" << hostValue << "):netValue(" << netValue << ")\n";)
 }
 
-void Packet::writeInt64(long int hostValue)
+void Packet::writeInt64(long long hostValue)
 {
-  long int netValue = htonll(hostValue);
-  memcpy(head, &netValue, sizeof(long int));
-  head += sizeof(long int);
-  this->size += sizeof(long int);
+  long long netValue = htonll(hostValue);
+  memcpy(head, &netValue, sizeof(long long));
+  head += sizeof(long long);
+  this->size += sizeof(long long);
   D(cout.flush() << "Packet::writeInt64():Value(" << hostValue << "):netValue(" << netValue << ")\n";)
 }
 
 void Packet::writeString(string value)
 {
-  short int length = value.length();
-  writeInt16(length);
+  string::size_type length = value.length();
+  writeInt16(static_cast<short>(length));
   memcpy(head, value.c_str(), length);
   head += length;
-  this->size += length;
+  this->size += static_cast<int>(length);
   D(cout.flush() << "Packet::writeString():" << length << ":" << value.c_str() << "\n";)
 }
 
@@ -270,13 +275,13 @@ int Packet::writeCompressedBytes(unsigned char* bytes, int numBytes, Compression
 
   if (codec == COMPRESSION_SNAPPY)
   {
-    unsigned long compressionBufferSize = snappy::MaxCompressedLength(numBytes);
+    size_t compressionBufferSize = snappy::MaxCompressedLength(numBytes);
     unsigned char* compressionBuffer = new unsigned char[compressionBufferSize];
     snappy::RawCompress((const char *)bytes, numBytes, (char *)compressionBuffer, &compressionBufferSize);
     this->writeBytes(compressionBuffer, (long)compressionBufferSize);
     D(cout.flush() << "Packet::writeCompressedBytes():SNAPPY:numbytes:" << numBytes << ":compressedBytes:" << compressionBufferSize << "\n";)
     delete[] compressionBuffer;
-    return compressionBufferSize;
+    return static_cast<int>(compressionBufferSize);
   }
 
   return -1; // invalid compression type
@@ -310,7 +315,7 @@ int Packet::endCRC32()
 {
   D(cout.flush() << "Packet::endCRC32()\n";)
   
-  int crcLength = this->head - this->crcHead;
+  unsigned int crcLength = static_cast<unsigned int>(this->head - this->crcHead);
   D(cout.flush() << "Packet::endCRC32():crcLength:" << crcLength << "\n";)
 
   uLong initCrc = crc32(0L, Z_NULL, 0);
