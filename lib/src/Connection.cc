@@ -105,6 +105,21 @@ private:
 static const WinSockInit<>& WINSOCK_INIT_INSTANCE = WinSockInit<>();
 
 }  // namespace detail
+
+// Get an error message for the given error code
+string GetErrorMessage(DWORD errorCode)
+{
+  char* s = NULL;
+  FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+    NULL,
+    errorCode,
+    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+    (LPSTR) &s, 0, NULL);
+  string result = s;
+  LocalFree(s);
+  return result;
+}
+
 #endif  // _WIN32
 
 Connection::Connection(string host, int port)
@@ -147,8 +162,11 @@ int Connection::open()
   this->socketFd = static_cast<int>(socket(this->host_info_list->ai_family, this->host_info_list->ai_socktype, this->host_info_list->ai_protocol));
   if (socketFd == -1)
   {
-
+#ifdef _WIN32
+    E("Connection::open():socket error:" << GetErrorMessage(WSAGetLastError()) << "\n");
+#else
     E("Connection::open():socket error:" << strerror(errno) << "\n");
+#endif  // _WIN32
     return OPEN_CONNECTION_ERROR;
   }
 
@@ -168,14 +186,19 @@ int Connection::open()
   D(cout.flush() << "--------------Connection::open():connect\n";)
 #ifdef _WIN32
   status = connect(socketFd, this->host_info_list->ai_addr, static_cast<int>(this->host_info_list->ai_addrlen));
+  if ((status == -1) && (WSAGetLastError() != EINPROGRESS) && (WSAGetLastError() != WSAEWOULDBLOCK))
+  {
+    E("Connection::open():open error:" << GetErrorMessage(WSAGetLastError()) << "\n");
+    return OPEN_CONNECTION_ERROR;
+  }
 #else
   status = connect(socketFd, this->host_info_list->ai_addr, this->host_info_list->ai_addrlen);
-#endif  // _WIN32
   if ((status == -1) && (errno != EINPROGRESS))
   {
     E("Connection::open():open error:" << strerror(errno) << "\n");
     return OPEN_CONNECTION_ERROR;
   }
+#endif  // _WIN32
 
   status = select(static_cast<int>(this->socketFd)+1, NULL, &set, NULL, &timeout);
 #ifdef _WIN32
