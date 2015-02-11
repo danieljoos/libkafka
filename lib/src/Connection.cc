@@ -50,6 +50,63 @@ const int Connection::OPEN_CONNECTION_ERROR = -1;
 const int Connection::READ_ERROR = -1;
 const int Connection::WRITE_ERROR = -1;
 
+#ifdef _WIN32
+namespace detail
+{
+
+// WinSock initialization
+template< int VersionMajor = 2, int VersionMinor = 0 >
+class WinSockInit
+{
+public:
+  WinSockInit()
+  {
+    startup();
+  }
+
+  WinSockInit(const WinSockInit&)
+  {
+    startup();
+  }
+
+  ~WinSockInit()
+  {
+    cleanup();
+  }
+
+private:
+  void startup()
+  {
+    if (::InterlockedIncrement(&count()) == 1)
+    {
+      D(cout.flush() << "--------------detail::WinSockInit::startup()\n";)
+        WSADATA data;
+      ::WSAStartup(MAKEWORD(VersionMajor, VersionMinor), &data);
+    }
+  }
+
+  void cleanup()
+  {
+    if (::InterlockedDecrement(&count()) == 0)
+    {
+      D(cout.flush() << "--------------detail::WinSockInit::cleanup()\n";)
+        ::WSACleanup();
+    }
+  }
+
+  unsigned int& count()
+  {
+    static unsigned int c = 0;
+    return c;
+  }
+};
+
+// Initialize WinSock before main
+static const WinSockInit<>& WINSOCK_INIT_INSTANCE = WinSockInit<>();
+
+}  // namespace detail
+#endif  // _WIN32
+
 Connection::Connection(string host, int port)
 {
   D(cout.flush() << "--------------Connection(incoming)\n";)
