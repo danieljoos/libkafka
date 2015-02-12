@@ -44,7 +44,7 @@ class OffsetPartition : public WireFormatter, public PacketWriter, public ErrorH
     int maxNumberOfOffsets;
 
     OffsetPartition(Packet *packet);
-    OffsetPartition(int partition, long int time, int maxNumberOfOffsets);
+    OffsetPartition(int partition, long long time, int maxNumberOfOffsets);
     ~OffsetPartition();
 
     unsigned char* toWireFormat(bool updatePacketSize = true);

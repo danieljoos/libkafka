@@ -62,7 +62,7 @@ Message::Message(Packet *packet, long long offset) : WireFormatter(), PacketWrit
   this->releaseArrays = false; // key and value point into the Packet buffer, not new memory
 }
 
-Message::Message(int crc, unsigned char magicByte, unsigned char attributes, int keyLength, unsigned char* key, int valueLength, unsigned char* value, long int offset, bool releaseArrays) : WireFormatter(), PacketWriter()
+Message::Message(int crc, unsigned char magicByte, unsigned char attributes, int keyLength, unsigned char* key, int valueLength, unsigned char* value, long long offset, bool releaseArrays) : WireFormatter(), PacketWriter()
 {
   D(cout.flush() << "--------------Message(params)\n";)
 

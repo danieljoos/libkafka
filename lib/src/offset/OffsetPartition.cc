@@ -41,14 +41,14 @@ namespace LibKafka {
     // Kafka Protocol: int partition
     this->partition = this->packet->readInt32();
 
-    // Kafka Protocol: long int time
+    // Kafka Protocol: long long time
     this->time = this->packet->readInt64();
     
     // Kafka Protocol: int maxNumberOfOffsets
     this->maxNumberOfOffsets = this->packet->readInt32();
   }
 
-  OffsetPartition::OffsetPartition(int partition, long int time, int maxNumberOfOffsets) : WireFormatter(), PacketWriter()
+  OffsetPartition::OffsetPartition(int partition, long long time, int maxNumberOfOffsets) : WireFormatter(), PacketWriter()
   {
     D(cout.flush() << "--------------OffsetPartition(params)\n";)
 
@@ -68,7 +68,7 @@ namespace LibKafka {
     // Kafka Protocol: int partition
     this->packet->writeInt32(this->partition);
 
-    // Kafka Protocol: long int time
+    // Kafka Protocol: long long time
     this->packet->writeInt64(this->time);
 
     // Kafka Protocol: int maxNumberOfOffsets
@@ -87,7 +87,7 @@ namespace LibKafka {
 
     int size = 0;
     if (includePacketSize) size += sizeof(int);
-    size += sizeof(int) + sizeof(long int) + sizeof(int);
+    size += sizeof(int) + sizeof(long long) + sizeof(int);
     return size;
   }
 

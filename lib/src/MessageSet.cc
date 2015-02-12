@@ -35,6 +35,7 @@ namespace LibKafka {
 MessageSet::MessageSet(int messageSetSize, Packet *packet) : WireFormatter(), PacketWriter(packet)
 {
   D(cout.flush() << "--------------MessageSet(buffer)\n";)
+  D(cout.flush() << "--------------messageSetSize=" << messageSetSize << "\n";)
 
   // Read an arbitrary number of Messages (and possibly MessageSets) from the packet, based on size values
 
@@ -51,11 +52,13 @@ MessageSet::MessageSet(int messageSetSize, Packet *packet) : WireFormatter(), Pa
     {
       // TODO: Nested MessageSet within message body, currently dropping the nested content
       E("MessageSet:nested MessageSet detected within message body:unimplemented\n");
+      D(cout.flush() << "--------------skipping " << (messageSize - messageWireSize) << " bytes\n";)
       packet->seek(messageSize-messageWireSize);
     }
     this->messages.push_back(message);
     // increment bytesRead for offset and messageSize fields, then messageSize
-    bytesRead += sizeof(long int) + sizeof(int) + messageSize;
+    bytesRead += sizeof(long long) + sizeof(int) + messageSize;
+    D(cout.flush() << "--------------bytesRead=" << bytesRead << "\n";)
   }
 
   if (bytesRead != this->messageSetSize)
@@ -94,7 +97,7 @@ unsigned char* MessageSet::toWireFormat(bool updatePacketSize)
   
   for(vector<Message*>::const_iterator message=this->messages.begin(); message!=this->messages.end(); ++message)
   {
-    // Kafka Protocol: long int offset
+    // Kafka Protocol: long long offset
     this->packet->writeInt64((*message)->offset);
 
     // Kafka Protocol: int messageSize (allow for Message size changes due to compression)
@@ -126,7 +129,7 @@ int MessageSet::getWireFormatSize(bool includePacketSize)
 
   for(vector<Message*>::const_iterator message=this->messages.begin(); message!=this->messages.end(); ++message)
   {
-    size += sizeof(long int) + sizeof(int);
+    size += sizeof(long long) + sizeof(int);
     size += (*message)->getWireFormatSize(false);
   }
 

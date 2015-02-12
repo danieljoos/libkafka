@@ -44,7 +44,7 @@ class FetchPartition : public WireFormatter, public PacketWriter, public ErrorHa
     int maxBytes;
 
     FetchPartition(Packet *packet);
-    FetchPartition(int partition, long int fetchOffset, int maxBytes);
+    FetchPartition(int partition, long long fetchOffset, int maxBytes);
     ~FetchPartition();
 
     unsigned char* toWireFormat(bool updatePacketSize = true);

@@ -44,7 +44,7 @@ OffsetResponsePartition::OffsetResponsePartition(Packet *packet) : WireFormatter
   // Kafka Protocol: short int errorCode
   this->errorCode = this->packet->readInt16();
 
-  // Kafka Protocol: long int offset[]
+  // Kafka Protocol: long long offset[]
   this->offsetArraySize = this->packet->readInt32();
   this->offsetArray = new long long[this->offsetArraySize];
   for (int i=0; i<this->offsetArraySize; i++) {
@@ -83,7 +83,7 @@ unsigned char* OffsetResponsePartition::toWireFormat(bool updatePacketSize)
   // Kafka Protocol: short int errorCode
   this->packet->writeInt16(this->errorCode);
 
-  // Kafka Protocol: long int offset[]
+  // Kafka Protocol: long long offset[]
   this->packet->writeInt32(this->offsetArraySize);
   for (int i=0; i<this->offsetArraySize; i++) {
     this->packet->writeInt64(this->offsetArray[i]);
@@ -102,7 +102,7 @@ int OffsetResponsePartition::getWireFormatSize(bool includePacketSize)
 
   int size = 0;
   if (includePacketSize) size += sizeof(int);
-  size += sizeof(int) + sizeof(short int) + sizeof(int) + (this->offsetArraySize * sizeof(long int));
+  size += sizeof(int) + sizeof(short int) + sizeof(int) + (this->offsetArraySize * sizeof(long long));
   return size;
 }
 
